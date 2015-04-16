@@ -1,23 +1,173 @@
 package EnvironmentFinish;
 
-import simbad.sim.*;
+import  simbad.sim.*;
+
 import javax.vecmath.Vector3d;
+import javax.media.j3d.*;
+import javax.vecmath.Matrix3d;
+import javax.vecmath.Point3d;
 
 public class MyRobot extends Agent {
-   
-	
-	private Vector3d goal;
-	
-    public Vector3d getGoal() {
-		return goal;
-	}
 
-	public void setGoal(Vector3d goal) {
-		this.goal = goal;
-	}
+    final double  MAX_TRANSLATIONAL = 4;
+    final double  MAX_ROTATIONAL = 4;
+    final double ZERO = 0.01;
 
-	public MyRobot(Vector3d position, String name) {
-        super(position, name);
+    Vector3d goal;
+    Vector3d current_goal;
+    int g; // this is what the robot is supposed to do - 1 = turn around - 2 = move to next block - 3 = compute the next step
+    Point3d old_position;
+    
+
+
+	public MyRobot (Vector3d position, String name, Vector3d goal) 
+    {
+        super(position,name);
+        this.goal = goal;
     }
+    
+    public void initBehavior() 
+    {
+    	g = 1;
+    }
+    
+    public void performBehavior() 
+    {
+        Vector3d lg;
+        lg = getLocalCoords(goal); 
+        double dist = Math.sqrt(lg.x * lg.x + lg.z * lg.z);
+       
+        if(g == 1)
+        {
+	        if((getAngle()) >=  Math.PI/2)// && Math.toDegrees(getAngle()) < 90.5)
+	        {
+	        	System.out.println(Math.toDegrees(getAngle()));
+	        	g = 2;
+	        	//this.getCoords(old_position);
+	        	rotate(0);
+	        }
+	        else
+	        {
+	        	rotate(Math.PI/4);
+	        }
+        }
+        else if(g == 2)
+        {
+        	Point3d r = new Point3d();
+        	this.getCoords(r);
+        	if(this.getOdometer() >= 1.0)
+        	{
+        		g = 3;
+        		this.setTranslationalVelocity(0);
+        	}
+        	else
+        	{
+        		this.setTranslationalVelocity(0.05);
+        	}
+        }
+        
+//        if (dist > 0.1)
+//        {        
+//        //    lg.x/=5;
+//          //  lg.z/=5;       
+//            //lg.x*=MAX_TRANSLATIONAL;
+//            //lg.z*=MAX_ROTATIONAL;
+//            
+//            ActivateActuators(lg.x, lg.z);
+//        }  
+//        else
+//        {
+//            ActivateActuators(0,0);            
+//        }
+    }
+    
+    
+    public void rotate(double a)
+    {
+    	this.setRotationalVelocity(a);
+    }
+    
+    public void ActivateActuators(double x, double z)
+    {
+        if (x<0)
+        {
+            z *=2;
+            if (Math.abs(z)<ZERO)                
+                z=1;
+            x*=-1;
+        }
+        this.setRotationalVelocity(z);
+        this.setTranslationalVelocity(x);        
+    }
+    
+    public Vector3d getLocalCoords(Vector3d p)
+    {
+        Vector3d a = new Vector3d();
+        Point3d r = new Point3d();
+        double th = getAngle();
+        double x,y,z;
+        getCoords(r);
+        x = p.x - r.x;
+        z = -p.z+ r.z;        
+        a.x = (x*Math.cos(th) + z*Math.sin(th));
+        a.z = (z*Math.cos(th) - x*Math.sin(th));
+        a.y = (p.y);
+        return a;
+    }    
+    
+    public double getAngle()
+    {
+        double angle=0;
+        double msin; 
+        double mcos;              
+        Transform3D m_Transform3D = new Transform3D();
+        this.getRotationTransform(m_Transform3D);        
+        Matrix3d m1 = new Matrix3d();
+        m_Transform3D.get( m1 );                
+        msin=m1.getElement( 2, 0 );
+        mcos=m1.getElement( 0, 0 );        
+        if (msin<0)
+        {
+            angle = Math.acos(mcos);
+        }
+        else            
+        {
+            if (mcos<0)
+            {
+                angle = 2*Math.PI-Math.acos(mcos);
+            }
+            else
+            {            
+                angle = -Math.asin(msin);
+            }
+        }
+        while (angle<0)
+            angle+=Math.PI*2;
+        return angle;
+    }    
+    
+    public void setCurrent_goal(Vector3d current_goal) {
+		this.current_goal = current_goal;
+	}
+    public void moveNorth()
+    {
+    	
+    }
+    
+    public void moveEast()
+    {
+    	
+    }
+    
+    public void moveWest()
+    {
+    	
+    }
+    
+    public void moveSouth()
+    {
+    	
+    }
+    
 
 }

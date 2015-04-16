@@ -41,14 +41,14 @@ public class Simulation {
 					System.out.println(y);
 					Box b1 = new Box(new Vector3d(x + 0.5, 0, -y - 0.5), new Vector3f(1, 1, 1), env);
 					b1.setColor(new Color3f(0.0f, 0.0f, 1.0f));
-			        env.add(b1); 
+			        //env.add(b1); 
 				}
 				if(map[i][j] == 'R')
 				{
 					double x, y;
 					y = j - (world_size / 2);
 					x = i - (world_size / 2);
-			        robot =  new MyRobot(new Vector3d(x + 0.5, 0, -y - 0.5), "Mr Rubato");
+			        robot =  new MyRobot(new Vector3d(x + 0.5, 0, -y - 0.5), "Mr Rubato", new Vector3d(goal_x + 0.5, 0, -goal_y - 0.5));
 				}
 				if(map[i][j] == 'G')
 				{
@@ -60,15 +60,15 @@ public class Simulation {
 					double x, y;
 					y = j - (world_size / 2);
 					x = i - (world_size / 2);
-			        MyRobot r =  new MyRobot(new Vector3d(x + 0.5, 0, -y - 0.5), "Evil Rabatah");
+			        MyRobot r =  new MyRobot(new Vector3d(x + 0.5, 0, -y - 0.5), "Evil Rabatah", null);
 			        r.setColor(new Color3f(1.0f, 0.0f, 0.0f));
-			        env.add(r);
+			        //env.add(r);
 			        
 				}
 			}
 			System.out.println();
 		}
-		robot.setGoal(new Vector3d(goal_x + 0.5, 0, -goal_y - 0.5));
+		//robot.setGoal(new Vector3d(goal_x + 0.5, 0, -goal_y - 0.5));
 		env.add(robot);
     
         
