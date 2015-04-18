@@ -194,13 +194,11 @@ public class MyRobot extends Agent {
 
     public void computeNextGoalWithAStar()
     {
-    	
     	Comparator<ListData> comparator = new fValueComparator();
         PriorityQueue<ListData> openList = new PriorityQueue<ListData>(comparator);
     	ArrayList<ListData> closeList = new ArrayList<ListData>();
     	
-    	Point2i g = new Point2i((int) Math.round((goal.x - 0.5) + (world_size / 2)),
-    			(int)Math.round(-(goal.z + 0.5) + (world_size / 2)));
+    	
     	
     	
     	Point3d r = new Point3d();
@@ -208,68 +206,105 @@ public class MyRobot extends Agent {
 
     	r.x = (r.x - 0.5) + (world_size / 2);
     	r.z = -(r.z + 0.5) + (world_size / 2);
-    
+    	
     	openList.add(new ListData((int) Math.round(r.x), (int)Math.round(r.z)));
-    	boolean valid = true;
+
     	while(!openList.isEmpty())
     	{
+    		System.out.println("While");
     		ListData q = openList.remove();
     		int x, y;
     		x = q.getPoint().x;
     		y = q.getPoint().y;
     		
-    		ListData successor;
     		if((y + 1) != map.length)
     		{
     			if(map[x][y + 1] == 'e' || map[x][y + 1] == 'R')
     			{
-    				// apo edw kai katw synartisi
-    				successor = new ListData(x, y + 1);
-    				if(x == g.x && (y + 1) == g.y)
-    				{
-    					System.out.println("You have reached the goal. Find a way to break the execution.");
-    				}
-    				else
-    				{
-    					double f;
-    					f = Math.abs(x - g.x) + Math.abs((y + 1) - g.y);
-    					successor.setF(f);
-    					
-    					for(ListData d: openList)
-    					{
-    						if((d.getX() == x) && (d.getY() == (y + 1)))
-    						{
-    							if(d.getF() <= f)
-    							{
-    								valid = false;
-    							}
-    						}
-    					}
-    					
-    					if(valid)
-    					{
-	    					for(ListData dt: closeList)
-							{
-								if((dt.getX() == x) && (dt.getY() == (y + 1)))
-	    						{
-									if(dt.getF() > f)
-									{
-										openList.add(successor);
-									}
-	    						}
-								else
-								{
-									openList.add(successor);
-								}
-							}
-    					}
-    					
-    				} // mexri edw i synartisi
+    				checkLists(x, y + 1, openList, closeList);	
     			}
     		}
+    		if((y - 1) != - 1)
+    		{
+    			if(map[x][y - 1] == 'e' || map[x][y - 1] == 'R')
+    			{
+    				checkLists(x, y - 1, openList, closeList);	
+    			}
+    		}
+    		if((x + 1) != map.length)
+    		{
+    			if(map[x + 1][y] == 'e' || map[x + 1][y] == 'R')
+    			{
+    				checkLists(x + 1, y, openList, closeList);	
+    			}
+    		}
+    		if((x - 1) != -1)
+    		{
+    			if(map[x - 1][y] == 'e' || map[x - 1][y] == 'R')
+    			{
+    				checkLists(x - 1, y, openList, closeList);	
+    			}
+    		}
+    			
     		closeList.add(q);
     	}
+    	System.out.println("List size: " + closeList.size());
+    	for(ListData d: closeList)
+    	{
+    		System.out.println(d.getX() + ", " + d.getY());
+    	}
     	
+    }
+    
+    public void checkLists(int x, int y, PriorityQueue<ListData> openList, ArrayList<ListData> closeList)    
+    {
+		ListData successor;
+		Point2i g = new Point2i((int) Math.round((goal.x - 0.5) + (world_size / 2)),
+    			(int)Math.round(-(goal.z + 0.5) + (world_size / 2)));
+    	boolean valid = true;
+		
+		
+    	successor = new ListData(x, y);
+		if(x == g.x && (y) == g.y)
+		{
+			System.out.println("You have reached the goal. Find a way to break the execution.");
+		}
+		else
+		{
+			double f;
+			f = Math.abs(x - g.x) + Math.abs((y) - g.y);
+			successor.setF(f);
+			
+			for(ListData d: openList)
+			{
+				if((d.getX() == x) && (d.getY() == (y)))
+				{
+					if(d.getF() <= f)
+					{
+						valid = false;
+					}
+				}
+			}
+			
+			if(valid)
+			{
+				for(ListData dt: closeList)
+				{
+					if((dt.getX() == x) && (dt.getY() == (y)))
+					{
+						if(dt.getF() <= f)
+						{
+							valid = false;
+						}
+					}
+				}
+			}
+			if(valid)
+			{
+				openList.add(successor);
+			}
+			
+		} // mexri edw i synartisi
     }
     
     public class fValueComparator implements Comparator<ListData>
