@@ -27,7 +27,7 @@ public class Simulation {
         env.setWorldSize(map.length); // ginetai na orisoume diaforetiko megethos pleurwn?
         System.out.println(map.length);
         MyRobot robot = null;
-        double goal_x = 0, goal_y = 0;
+        double goal_x = 0, goal_y = 0, robot_x = 0, robot_y = 0;
 		for(int i = 0; i < map.length; i++)
 		{
 			for(int j = 0; j < map[i].length; j++)
@@ -45,10 +45,8 @@ public class Simulation {
 				}
 				if(map[i][j] == 'R')
 				{
-					double x, y;
-					y = j - (world_size / 2);
-					x = i - (world_size / 2);
-			        robot =  new MyRobot(new Vector3d(x + 0.5, 0, -y - 0.5), "Mr Rubato", new Vector3d(goal_x + 0.5, 0, -goal_y - 0.5));
+					robot_y = j - (world_size / 2);
+					robot_x = i - (world_size / 2);
 				}
 				if(map[i][j] == 'G')
 				{
@@ -69,6 +67,8 @@ public class Simulation {
 			System.out.println();
 		}
 		//robot.setGoal(new Vector3d(goal_x + 0.5, 0, -goal_y - 0.5));
+		robot =  new MyRobot(new Vector3d(robot_x + 0.5, 0, -robot_y - 0.5), "Mr Rubato", new Vector3d(goal_x + 0.5, 0, -goal_y - 0.5));
+		robot.setMap(map);
 		env.add(robot);
     
         
