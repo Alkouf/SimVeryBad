@@ -29,7 +29,7 @@ public class MyRobot extends Agent {
     Point3d old_position;
     char map[][];
     double world_size;
-    
+    private ArrayList<ListData> closeList;
 
     public void setMap(char map[][])
     {
@@ -56,6 +56,19 @@ public class MyRobot extends Agent {
        if(g == 3)
        {
     	   computeNextGoalWithAStar();
+    	   System.out.println("FINAL: " + closeList.size());
+//	       	for(ListData d: closeList)
+//	       	{
+//	       		System.out.println(d.getX() + ", " + d.getY());
+//				
+//	       	}
+//	       	System.out.println("List with parents: ");
+//	       	for(ListData d: closeList)
+//	       	{
+//	       		System.out.println(d.toString());	
+//	       	}
+    	   findPath();
+	       	
     	   g = 1;
        }
         if(g == 1)
@@ -196,7 +209,7 @@ public class MyRobot extends Agent {
     {
     	Comparator<ListData> comparator = new fValueComparator();
         PriorityQueue<ListData> openList = new PriorityQueue<ListData>(comparator);
-    	ArrayList<ListData> closeList = new ArrayList<ListData>();
+    	closeList = new ArrayList<ListData>();
     	
     	
     	
@@ -207,11 +220,12 @@ public class MyRobot extends Agent {
     	r.x = (r.x - 0.5) + (world_size / 2);
     	r.z = -(r.z + 0.5) + (world_size / 2);
     	
-    	openList.add(new ListData((int) Math.round(r.x), (int)Math.round(r.z)));
-
+    	openList.add(new ListData((int) Math.round(r.x), (int)Math.round(r.z), null));
+    	int counter = 1;
     	while(!openList.isEmpty())
     	{
-    		System.out.println("While");
+    		System.out.println("Run " + counter + ": ");
+    		counter ++;
     		ListData q = openList.remove();
     		int x, y;
     		x = q.getPoint().x;
@@ -219,55 +233,82 @@ public class MyRobot extends Agent {
     		
     		if((y + 1) != map.length)
     		{
-    			if(map[x][y + 1] == 'e' || map[x][y + 1] == 'R')
+    			if(map[x][y + 1] == 'e' || map[x][y + 1] == 'R' || map[x][y + 1] == 'G')
     			{
-    				checkLists(x, y + 1, openList, closeList);	
+    				if(checkLists(x, y + 1, openList, q))
+    				{
+    					closeList.add(q);
+    					closeList.add(new ListData(x, y + 1, q));
+    					break;
+    				}
     			}
     		}
     		if((y - 1) != - 1)
     		{
-    			if(map[x][y - 1] == 'e' || map[x][y - 1] == 'R')
+    			if(map[x][y - 1] == 'e' || map[x][y - 1] == 'R' || map[x][y - 1] == 'G')
     			{
-    				checkLists(x, y - 1, openList, closeList);	
+    				if(checkLists(x, y - 1, openList, q))
+    				{
+    					closeList.add(q);
+    					closeList.add(new ListData(x, y - 1, q));
+    					break;
+    				}
     			}
     		}
     		if((x + 1) != map.length)
     		{
-    			if(map[x + 1][y] == 'e' || map[x + 1][y] == 'R')
+    			if(map[x + 1][y] == 'e' || map[x + 1][y] == 'R' || map[x + 1][y] == 'G')
     			{
-    				checkLists(x + 1, y, openList, closeList);	
+    				if(checkLists(x + 1, y, openList, q))
+    				{
+    					closeList.add(q);
+    					closeList.add(new ListData(x + 1, y, q));
+    					break;
+    				}
     			}
     		}
     		if((x - 1) != -1)
     		{
-    			if(map[x - 1][y] == 'e' || map[x - 1][y] == 'R')
+    			if(map[x - 1][y] == 'e' || map[x - 1][y] == 'R' || map[x - 1][y] == 'G')
     			{
-    				checkLists(x - 1, y, openList, closeList);	
+    				if(checkLists(x - 1, y, openList, q))
+    				{
+    					closeList.add(q);
+    					closeList.add(new ListData(x - 1, y, q));
+    					break;
+    				}
     			}
     		}
-    			
     		closeList.add(q);
+     	   	System.out.println("Close List: ");
+	       	for(ListData d: closeList)
+	       	{
+	       		System.out.println(d.getX() + ", " + d.getY());
+	       	}
+     	   System.out.println("Open List: ");
+	       	for(ListData d: openList)
+	       	{
+	       		System.out.println(d.getX() + ", " + d.getY());
+	       	}
     	}
-    	System.out.println("List size: " + closeList.size());
-    	for(ListData d: closeList)
-    	{
-    		System.out.println(d.getX() + ", " + d.getY());
-    	}
+
     	
     }
     
-    public void checkLists(int x, int y, PriorityQueue<ListData> openList, ArrayList<ListData> closeList)    
+    public boolean checkLists(int x, int y, PriorityQueue<ListData> openList, ListData parent)    
     {
+
 		ListData successor;
 		Point2i g = new Point2i((int) Math.round((goal.x - 0.5) + (world_size / 2)),
     			(int)Math.round(-(goal.z + 0.5) + (world_size / 2)));
     	boolean valid = true;
 		
 		
-    	successor = new ListData(x, y);
+    	successor = new ListData(x, y, parent);
 		if(x == g.x && (y) == g.y)
 		{
 			System.out.println("You have reached the goal. Find a way to break the execution.");
+			return true;
 		}
 		else
 		{
@@ -305,7 +346,35 @@ public class MyRobot extends Agent {
 			}
 			
 		} // mexri edw i synartisi
+		return false;
     }
+    
+    
+    public void findPath()
+    {
+    	ArrayList<ListData> path = new ArrayList<ListData>();
+    	ListData prev;
+    	path.add(closeList.get(closeList.size() - 1));
+    	
+    	prev = closeList.get(closeList.size() - 1);
+    	
+    	for(int i = closeList.size() - 2; i >= 0; i --)
+    	{
+    		System.out.println(i);
+    		ListData dt = closeList.get(i);
+    		if(dt.compareData(prev))
+    		{
+    			path.add(dt);
+        		prev = closeList.get(i);
+    		}
+
+    	}
+    	for(int i = path.size() - 1; i >= 0; i --)
+    	{
+    		System.out.println(path.get(i).getX() + ", " + path.get(i).getY());
+    	}
+    }
+    
     
     public class fValueComparator implements Comparator<ListData>
     {

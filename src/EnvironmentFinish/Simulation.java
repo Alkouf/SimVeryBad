@@ -41,7 +41,7 @@ public class Simulation {
 					System.out.println(y);
 					Box b1 = new Box(new Vector3d(x + 0.5, 0, -y - 0.5), new Vector3f(1, 1, 1), env);
 					b1.setColor(new Color3f(0.0f, 0.0f, 1.0f));
-			        //env.add(b1); 
+			        env.add(b1); 
 				}
 				if(map[i][j] == 'R')
 				{
@@ -51,7 +51,10 @@ public class Simulation {
 				if(map[i][j] == 'G')
 				{
 					goal_y = j - (world_size / 2);
-					goal_x = i - (world_size / 2);			
+					goal_x = i - (world_size / 2);	
+					Box b1 = new Box(new Vector3d(goal_x + 0.5, 1, -goal_y - 0.5), new Vector3f(0.5f, 0.5f, 0.5f), env);
+					b1.setColor(new Color3f(0.0f, 1.0f, 1.0f));
+			        env.add(b1); 
 				}
 				if(map[i][j] == 'D')
 				{
