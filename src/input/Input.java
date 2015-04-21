@@ -43,7 +43,9 @@ public class Input {
 //			System.exit(1);
 //		}
 		
-		path = "C:/Users/Andreas Sitaras/Desktop/robot_input.txt";
+		
+		
+		path = System.getProperty("user.dir")+"/ranbot_input.txt";
 		FileInputStream fstream = null;
 		try {
 			fstream = new FileInputStream(path);
@@ -152,6 +154,7 @@ public class Input {
 	
 	public char[][] createRandomFile()
 	{
+
 		try {
 			
 			int selection = JOptionPane.showConfirmDialog(
@@ -175,8 +178,9 @@ public class Input {
 
 			
 			//System.out.println(int1 + ", " + int2 + ", " + int3);
-			PrintWriter writer = new PrintWriter("C:/Users/Andreas "
-					+ "Sitaras/Documents/ranbot_input.txt", "UTF-8");
+			//PrintWriter writer = new PrintWriter("C:/Users/Andreas "
+			//		+ "Sitaras/Documents/ranbot_input.txt", "UTF-8");
+			PrintWriter writer = new PrintWriter(System.getProperty("user.dir")+"/ranbot_input.txt", "UTF-8");
 			
 			Scanner scan = new Scanner(System.in);
 			int[] dimensions = new int[2];
