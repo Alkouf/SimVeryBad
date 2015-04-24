@@ -61,10 +61,11 @@ public class Simulation {
 					double x, y;
 					y = j - (world_size / 2);
 					x = i - (world_size / 2);
-			        MyRobot r =  new MyRobot(new Vector3d(x + 0.5, 0, -y - 0.5), "Evil Rabatah", null);
-			        r.setColor(new Color3f(1.0f, 0.0f, 0.0f));
-			        //env.add(r);
-			        
+			        //MyRobot r =  new MyRobot(new Vector3d(x + 0.5, 0, -y - 0.5), "Evil Rabatah", null);
+			        //r.setColor(new Color3f(1.0f, 0.0f, 0.0f));
+					Box b1 = new Box(new Vector3d(x + 0.5, 0, -y - 0.5), new Vector3f(1, 1, 1), env);
+					b1.setColor(new Color3f(0.0f, 1.0f, 1.0f));
+			        env.add(b1);
 				}
 			}
 			System.out.println();
