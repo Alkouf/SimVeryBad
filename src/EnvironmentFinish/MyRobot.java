@@ -1,5 +1,7 @@
 package EnvironmentFinish;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,9 +34,13 @@ public class MyRobot extends Agent {
 	double world_size;
 	private ArrayList<ListData> closeList;
 	private double angle = Math.PI / 2; // how much the robot must to rotate
-	private double rotational_velocity = Math.PI / 4; // the speed to rotate the robot
+	private double rotational_velocity = Math.PI / 16; // the speed to rotate the robot
 	private double steps = 0.0; // how many blocks the robot moved
 	private ArrayList<ListData> path;
+	private double start_angle;
+	private double rotation;
+	private double rotated;
+	private double previous_rotation;
 
 	public void setMap(char map[][]) {
 		this.map = map;
@@ -53,7 +59,9 @@ public class MyRobot extends Agent {
 		findPath();
 
 		Collections.reverse(path);
-		
+		previous_rotation = this.getAngle();
+		start_angle= this.getAngle();
+		rotated = 0;
 		g = 3;
 	}
 
@@ -63,37 +71,51 @@ public class MyRobot extends Agent {
 		double dist = Math.sqrt(lg.x * lg.x + lg.z * lg.z);
 
 		if (g == 1) {
+			//System.out.println("Rotation: " + Math.toDegrees(rotation) + " - Rotated: " + Math.toDegrees(rotated));
 
-			if(rotational_velocity > 0)
-			{
-				if ((getAngle()) >= angle)// && Math.toDegrees(getAngle()) < 90.5)
+			//if(rotational_velocity > 0)
+			//{	
+				if ((round(getAngle(), 1)) == (round(angle, 1)) )// && Math.toDegrees(getAngle()) < 90.5)
+				//if(rotated >= rotation)
 				{
-					System.out.println(Math.toDegrees(getAngle()));
+					//rotated = 
+					System.out.print("Rotational Velocity: " + rotational_velocity);
+					System.out.println("No round Equal? = getAngle: " + getAngle() + ", angle: " + angle);
+					System.out.println("Equal? = getAngle: " + round(getAngle(), 1) + ", angle: " + (round(angle, 1)));
+					rotated = 0;
 					g = 2;
+					
 					// this.getCoords(old_position);
 					rotate(0);
 				} else {
 					rotate(rotational_velocity);
+					//System.out.println("previous rotation: " + previous_rotation + " current angle: " +  this.getAngle());
+					System.out.println("The angle every time: " + getAngle());
+					//rotated = Math.abs(Math.toDegrees(this.getAngle()) - Math.toDegrees(previous_rotation));
+					//System.out.println("How much it rotated: " + Math.toDegrees(rotated));
+					previous_rotation = this.getAngle();
 				}
-			}
-			else
-			{
-				if ((getAngle()) <= angle)// && Math.toDegrees(getAngle()) < 90.5)
-				{
-					System.out.println(Math.toDegrees(getAngle()));
-					g = 2;
-					// this.getCoords(old_position);
-					rotate(0);
-				} else {
-					rotate(rotational_velocity);
-				}
-			}
+			//}
+//			else
+//			{
+//				if ((round(getAngle(), 1)) <= (round(angle, 1)))// && Math.toDegrees(getAngle()) < 90.5)
+//				{
+//					System.out.print("Rotational Velocity: " + rotational_velocity );
+//					System.out.println(", angle: " + Math.toDegrees(getAngle()));
+//					g = 2;
+//					// this.getCoords(old_position);
+//					rotate(0);
+//				} else {
+//					rotate(rotational_velocity);
+//				}
+//			}
 		} else if (g == 2) {
 			Point3d r = new Point3d();
 			this.getCoords(r);
 			
 			if (this.getOdometer() / steps >= 1.0) {
 				System.out.println("Odometer = " + this.getOdometer() + " steps = " + steps + " Division = " + this.getOdometer() / steps);
+
 				g = 3;
 				this.setTranslationalVelocity(0);
 			} else {
@@ -110,9 +132,20 @@ public class MyRobot extends Agent {
 
 	
 	
+	public static double round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    BigDecimal bd = new BigDecimal(value);
+	    bd = bd.setScale(places, RoundingMode.HALF_UP);
+	    return bd.doubleValue();
+	}
+	
+	
 	public void computeAngle()
 	{
+		
 		steps ++;
+
 		if(steps >= path.size())
 		{
 			g = 4;
@@ -120,41 +153,153 @@ public class MyRobot extends Agent {
 		}
 		else
 		{
-			System.out.println("Print me the steps plis: " + steps);
-			ListData next_block = path.get((int)steps);
-			ListData current_block = path.get(((int)steps) - 1);
 			
-			if(next_block.getX() < current_block.getX())
-			{
-				angle = Math.PI;
-			}
-			else if(next_block.getX() > current_block.getX())
-			{
-				angle = 0.0;
-			}
-			else if(next_block.getY() < current_block.getY())
-			{
-				angle = 3 * (Math.PI / 2);
-			}
-			else
-			{
-				angle = Math.PI / 2;
-			}
 			
-			if(angle - this.getAngle() < 0)
+			System.out.println("--------------------------------------");
+			//testing the new angle
+
+			Point3d r = new Point3d();
+			this.getCoords(r);
+
+			ListData ken_block = path.get((int)steps);
+
+			Point3d k = new Point3d(ken_block.getX() - (world_size/2) + 0.5, 0, -(ken_block.getY() - (world_size/2))  - 0.5);
+			
+			
+			//x_dif = 
+			// h gwnia pou theloume = atan (y' - y / x' - x)
+			angle = -Math.atan2((k.z - r.z), (k.x - r.x)); //+ Math.PI;
+
+			if(angle < 0)
 			{
-				rotational_velocity = -Math.abs(rotational_velocity);
+				angle += 2 * Math.PI;
 			}
-			else if(angle - this.getAngle() > 0)
+			System.out.println("The new angle: " + Math.toDegrees(angle));
+			
+			double currentAngle = this.getAngle();
+			
+//			if(Math.abs(angle - currentAngle) > Math.PI)
+//			{
+//				if(angle < currentAngle)
+//				{
+//					angle += 2 * Math.PI;
+//				}
+//				else
+//				{
+//					currentAngle += 2 * Math.PI;
+//				}
+//			}
+//			System.out.println("Angle for the aliex: " + angle + " and the current: " + currentAngle);
+//			if(angle - currentAngle < 0)
+//			{
+//				rotational_velocity = -Math.abs(rotational_velocity);
+//			}
+//			else if(angle - currentAngle > 0)
+//			{
+//				rotational_velocity = Math.abs(rotational_velocity);
+//			}
+//			else
+//			{
+//				g = 2;
+//			}
+			System.out.println("Angle for the aliex: " + Math.toDegrees(angle) + " and the current: " + Math.toDegrees(currentAngle));
+			double dif1 = angle - currentAngle;
+			double dif2 = (2 * Math.PI) - Math.abs(dif1);
+			rotational_velocity = Math.abs(rotational_velocity);
+			if(dif1 > 0)
 			{
-				rotational_velocity = Math.abs(rotational_velocity);
+				if(Math.abs(dif1) < Math.abs(dif2))
+				{
+					rotational_velocity = Math.abs(rotational_velocity);
+					rotation = Math.abs(dif1);
+				}
+				else if(Math.abs(dif1) > Math.abs(dif2))
+				{
+					rotational_velocity = -Math.abs(rotational_velocity);
+					rotation = Math.abs(dif2);
+				}
+				else
+				{
+					rotation = Math.PI;
+					System.out.println("Yahoo!");
+				}
 			}
+			else if(dif1 < 0)
+			{
+				if(Math.abs(dif1) < Math.abs(dif2))
+				{
+					rotational_velocity = -Math.abs(rotational_velocity);
+					rotation = Math.abs(dif1);
+				}
+				else if(Math.abs(dif1) > Math.abs(dif2))
+				{
+					rotational_velocity = Math.abs(rotational_velocity);
+					rotation = Math.abs(dif2);
+				}
+				else
+				{
+					rotation = Math.PI;
+					System.out.println("Yahoo!");
+				}
+			}
+
+			System.out.println("Real rotation : " + Math.toDegrees(rotation));
+			start_angle = currentAngle;
+
+			System.out.println("Robot coords: " + r.toString() + ", " + k.toString());
+			
+			// h metatropi: (x + 0.5, 0, -y - 0.5)
+			
+			
+			
+			//end test
+			
+			
+			
+//			System.out.println("Print me the steps plis: " + steps);
+//			ListData next_block = path.get((int)steps);
+//			ListData current_block = path.get(((int)steps) - 1);
+//			
+//			if(next_block.getX() < current_block.getX())
+//			{
+//				angle = Math.PI;
+//			}
+//			else if(next_block.getX() > current_block.getX())
+//			{
+//				angle = 0.0;
+//			}
+//			else if(next_block.getY() < current_block.getY())
+//			{
+//				angle = 3 * (Math.PI / 2);
+//			}
+//			else
+//			{
+//				angle = Math.PI / 2;
+//			}
+//			
+//			if(angle - this.getAngle() < 0)
+//			{
+//				rotational_velocity = -Math.abs(rotational_velocity);
+//			}
+//			else if(angle - this.getAngle() > 0)
+//			{
+//				rotational_velocity = Math.abs(rotational_velocity);
+//			}
+//			else
+//			{
+//				g = 2;
+//			}
 		
 		}
-		System.out.println("The angle: " + Math.toDegrees(angle));
+		//System.out.println("The angle: " + Math.toDegrees(angle));
 
 		
 	}
+	
+	
+	
+
+	
 	
 	public void rotate(double a) {
 		this.setRotationalVelocity(a);
@@ -213,21 +358,6 @@ public class MyRobot extends Agent {
 		this.current_goal = current_goal;
 	}
 
-	public void moveNorth() {
-
-	}
-
-	public void moveEast() {
-
-	}
-
-	public void moveWest() {
-
-	}
-
-	public void moveSouth() {
-
-	}
 
 	public void computeNextGoalWithAStar() {
 		Comparator<ListData> comparator = new fValueComparator();
@@ -236,7 +366,7 @@ public class MyRobot extends Agent {
 		closeList = new ArrayList<ListData>();
 
 		Point3d r = new Point3d();
-		this.getCoords(r);
+		this.getCoords(r); 
 
 		r.x = (r.x - 0.5) + (world_size / 2);
 		r.z = -(r.z + 0.5) + (world_size / 2);
