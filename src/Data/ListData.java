@@ -9,10 +9,10 @@ public class ListData {
 	private double f;
 	private ListData parent;
 	
-	
-	public boolean compareData(ListData parent)
+	// checks if a block is a parent of the given block
+	public boolean compareData(ListData block)
 	{
-		if(this.getX() == parent.getParent().getX() && this.getY() == parent.getParent().getY())
+		if(this.getX() == block.getParent().getX() && this.getY() == block.getParent().getY())
 			return true;
 		else
 			return false;

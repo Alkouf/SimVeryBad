@@ -2,13 +2,14 @@ package EnvironmentFinish;
 
 import input.Input;
 
+import javax.swing.JOptionPane;
 import javax.vecmath.Color3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
 import simbad.gui.Simbad;
-import simbad.sim.Arch;
 import simbad.sim.Box;
+import simbad.sim.CherryAgent;
 import simbad.sim.EnvironmentDescription;
 import simbad.sim.Wall;
 
@@ -16,53 +17,72 @@ public class Simulation {
 
     public static void main(String[] args) {
 
-    	Input input = new Input();
+    	Input input = new Input(); // item that reads or creates the file
+    	char[][] map; // the enviroment map (boxes, goal etc...)
     	
-    	//char[][] map = input.readFileWithGraphical();
-    	char[][] map = input.createRandomFile();
+    	// Asking for user's input
+    	 String[] choices = { "Random", "File"};
+    	    String choice = (String) JOptionPane.showInputDialog(null, "Choose now mr Vrakas", "Chose input method", JOptionPane.QUESTION_MESSAGE, null, choices, // Array of choices
+    	        choices[1]); // Initial choice
+    	    
+    	    if(choice.equals("Random"))
+    	    {
+    	    	map = input.createRandomFile(); // create random file
+    	    }
+    	    else
+    	    {
+    	    	map = input.readFileWithGraphical(); // read from file
+    	    }
+    	 // end of input
     	
-    	double world_size = map.length;
+    	double world_size = map.length; // world's size
     	
         EnvironmentDescription env = new EnvironmentDescription();
-        env.setWorldSize(map.length); // ginetai na orisoume diaforetiko megethos pleurwn?
+        env.setWorldSize(map.length); 
         System.out.println(map.length);
+        
         MyRobot robot = null;
-        double goal_x = 0, goal_y = 0, robot_x = 0, robot_y = 0;
-		for(int i = 0; i < map.length; i++)
+        
+        double goal_x = 0, goal_y = 0, robot_x = 0, robot_y = 0; // robot's and goal's coordinates
+        
+        
+        // adding items to the environment
+		for(int i = 0; i < map.length; i++) // for every block in the x axis
 		{
-			for(int j = 0; j < map[i].length; j++)
+			for(int j = 0; j < map[i].length; j++) // for every block in the z axis
 			{
 				
-				if(map[i][j] == 'X')
+				if(map[i][j] == 'X') // X represents a box
 				{
 					double x, y;
-					y = j - (world_size / 2);
+					// transpose map array indexes to world's coordinates
+					y = j - (world_size / 2); 
 					x = i - (world_size / 2);
-					System.out.println(y);
+					// adding the box
 					Box b1 = new Box(new Vector3d(x + 0.5, 0, -y - 0.5), new Vector3f(1, 1, 1), env);
 					b1.setColor(new Color3f(0.0f, 0.0f, 1.0f));
 			        env.add(b1); 
 				}
-				if(map[i][j] == 'R')
+				if(map[i][j] == 'R') // R represents the Robot
 				{
-					robot_y = j - (world_size / 2);
+					// saving robot's coords for future use
+					robot_y = j - (world_size / 2); 
 					robot_x = i - (world_size / 2);
 				}
-				if(map[i][j] == 'G')
+				if(map[i][j] == 'G') // G = goal
 				{
 					goal_y = j - (world_size / 2);
 					goal_x = i - (world_size / 2);	
-					Box b1 = new Box(new Vector3d(goal_x + 0.5, 1, -goal_y - 0.5), new Vector3f(0.5f, 0.5f, 0.5f), env);
-					b1.setColor(new Color3f(0.0f, 1.0f, 1.0f));
-			        env.add(b1); 
+					// adding a cherry to the goal's position in the world
+			        CherryAgent ca = new CherryAgent(new Vector3d(goal_x + 0.5, 1, -goal_y - 0.5),"goal",0.1f);
+			        env.add(ca);
 				}
-				if(map[i][j] == 'D')
+				if(map[i][j] == 'D') // D = enemy robot. It is considered as an obstacle
 				{
 					double x, y;
 					y = j - (world_size / 2);
 					x = i - (world_size / 2);
-			        //MyRobot r =  new MyRobot(new Vector3d(x + 0.5, 0, -y - 0.5), "Evil Rabatah", null);
-			        //r.setColor(new Color3f(1.0f, 0.0f, 0.0f));
+					// adding the obstacle
 					Box b1 = new Box(new Vector3d(x + 0.5, 0, -y - 0.5), new Vector3f(1, 1, 1), env);
 					b1.setColor(new Color3f(0.0f, 1.0f, 1.0f));
 			        env.add(b1);
@@ -70,13 +90,14 @@ public class Simulation {
 			}
 			System.out.println();
 		}
-		//robot.setGoal(new Vector3d(goal_x + 0.5, 0, -goal_y - 0.5));
+
+		// adding our robot to the world
 		robot =  new MyRobot(new Vector3d(robot_x + 0.5, 0, -robot_y - 0.5), "Mr Rubato", new Vector3d(goal_x + 0.5, 0, -goal_y - 0.5));
 		robot.setMap(map);
 		env.add(robot);
     
         
-
+		// adding surrounding walls
         Wall w1 = new Wall(new Vector3d(0.0, 0, world_size/2 + 0.15), map.length + 0.6f, 1, env);
         w1.setColor(new Color3f(1.0f, 1.0f, 0.0f));
         env.add(w1);
@@ -91,11 +112,11 @@ public class Simulation {
         w1.setColor(new Color3f(1.0f, 1.0f, 0.0f));
         w1.rotate90(1);
         env.add(w1);
-//        
-//        Arch a1 = new Arch(new Vector3d(3, 0, 2), env);
-//        env.add(a1);
+        // endof adding surrounding walls
 
-        Simbad simulator = new Simbad(env, false);
+
+        @SuppressWarnings("unused")
+		Simbad simulator = new Simbad(env, false);
     }
 
 }

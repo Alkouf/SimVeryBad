@@ -45,7 +45,8 @@ public class Input {
 		
 		
 		
-		path = System.getProperty("user.dir")+"/ranbot_input.txt";
+		//path = System.getProperty("user.dir")+"/ranbot_input.txt";
+		path = "C:/Users/Andreas Sitaras/Desktop/robot_input.txt";
 		FileInputStream fstream = null;
 		try {
 			fstream = new FileInputStream(path);
@@ -57,7 +58,6 @@ public class Input {
 		BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
 		
 		String line;
-		
 		
 		int[] dimensions = new int[2];
 		//String[][] map;
@@ -106,8 +106,8 @@ public class Input {
 	
 	
 	
-	private int[] input;
-    private JSpinner[] inputField;
+	private int input;
+    private JSpinner inputField;
 	
 	private JPanel getPanel()
     {
@@ -124,26 +124,16 @@ public class Input {
         centerPanel.setBackground(Color.WHITE);
 
         JLabel mLabel1 = new JLabel("Enter X size : ");
-        JLabel mLabel2 = new JLabel("Enter Y size : ");
-        JLabel mLabel3 = new JLabel("Enter Space Propability : ");
 
 
-        input = new int[3];
-        inputField = new JSpinner[3];
-        inputField[0] = new JSpinner();
-        inputField[1] = new JSpinner();
-        inputField[2] = new JSpinner();
-        for(int i = 0; i < 3; i++)
-        {
-            inputField[i].setModel(new SpinnerNumberModel(10, 0, 100, 1));
-        }
-        inputField[2].setValue(50);
+        inputField = new JSpinner();
+
+            inputField.setModel(new SpinnerNumberModel(10, 0, 100, 1));
+        
+
         centerPanel.add(mLabel1);
-        centerPanel.add(inputField[0]);
-        centerPanel.add(mLabel2);
-        centerPanel.add(inputField[1]);
-        centerPanel.add(mLabel3);
-        centerPanel.add(inputField[2]);
+        centerPanel.add(inputField);
+
 
         basePanel.add(centerPanel);
 
@@ -164,11 +154,10 @@ public class Input {
 
 	        if (selection == JOptionPane.OK_OPTION) 
 	        {
-	            for ( int i = 0; i < 3; i++)
-	            {
-	               input[i] = (int)inputField[i].getValue();
-	               System.out.println(input[i]);           
-	            }
+
+	               input = (int)inputField.getValue();
+	               System.out.println(input);           
+
 	            
 	        }
 	        else
@@ -177,32 +166,20 @@ public class Input {
 	        }
 
 			
-			//System.out.println(int1 + ", " + int2 + ", " + int3);
-			//PrintWriter writer = new PrintWriter("C:/Users/Andreas "
-			//		+ "Sitaras/Documents/ranbot_input.txt", "UTF-8");
 			PrintWriter writer = new PrintWriter(System.getProperty("user.dir")+"/ranbot_input.txt", "UTF-8");
 			
 			Scanner scan = new Scanner(System.in);
-			int[] dimensions = new int[2];
+			int dimensions = input;
+
+
 			
-			/*
-			for(int i = 0; i < 2; i++)
-			{
-				System.out.println("Give value for dimension " + (i + 1) + ": ");
-				dimensions[i] = scan.nextInt();
-			}
-			*/
-			
-			dimensions[0] = input[0];
-			dimensions[1] = input[1];
-			
-			map = new char[dimensions[0]][dimensions[1]];
+			map = new char[dimensions][dimensions];
 			
 			Random rand = new Random();
 			String charSet = "eXee";
-			for(int i = 0; i < dimensions[0]; i++)
+			for(int i = 0; i < dimensions; i++)
 			{
-				for(int j = 0; j < dimensions[1]; j++)
+				for(int j = 0; j < dimensions; j++)
 				{
 					int randomChar = rand.nextInt(charSet.length());
 					map[i][j] = charSet.charAt(randomChar);
@@ -212,8 +189,8 @@ public class Input {
 			charSet = "DGR";
 			for(int i = 0; i < 3; i++)
 			{
-				int x = rand.nextInt(dimensions[0]);
-				int y = rand.nextInt(dimensions[1]);
+				int x = rand.nextInt(dimensions);
+				int y = rand.nextInt(dimensions);
 				
 				System.out.println(x + ", " + y);
 				map[x][y] = charSet.charAt(i);
@@ -224,9 +201,9 @@ public class Input {
 			scan.close();
 			writer.close();
 			
-			for(int i = 0; i < dimensions[0]; i++)
+			for(int i = 0; i < dimensions; i++)
 			{
-				for(int j = 0; j < dimensions[1]; j++)
+				for(int j = 0; j < dimensions; j++)
 				{
 					System.out.print(map[i][j]);
 				}
