@@ -1,3 +1,7 @@
+//Κουφάκης Αλέξανδρος-Μιχαήλ, 2175
+//Σεϊταρίδης Ανδρέας, 2200
+
+
 package Data;
 
 import javax.vecmath.Point2i;

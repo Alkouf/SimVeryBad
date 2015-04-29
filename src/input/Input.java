@@ -1,3 +1,6 @@
+//Κουφάκης Αλέξανδρος-Μιχαήλ, 2175
+//Σεϊταρίδης Ανδρέας, 2200
+
 package input;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -20,8 +23,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-
-
 public class Input {
 
 	
@@ -29,24 +30,23 @@ public class Input {
 	
 	public char[][] readFileWithGraphical()
 	{
-//		JFileChooser chooser = new JFileChooser();
+		JFileChooser chooser = new JFileChooser();
 		String path = "";
-//		// to choose with file chooser
-//		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-//		int option = chooser.showOpenDialog(chooser); // parentComponent must a component like JFrame, JDialog...
-//		if (option == JFileChooser.APPROVE_OPTION) 
-//		{
-//		   File selectedFile = chooser.getSelectedFile();
-//		   path = selectedFile.getAbsolutePath();
-//		   System.out.println(path);
-//		}else {
-//			System.exit(1);
-//		}
+		// to choose with file chooser
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		int option = chooser.showOpenDialog(chooser); // parentComponent must a component like JFrame, JDialog...
+		if (option == JFileChooser.APPROVE_OPTION) 
+		{
+		   File selectedFile = chooser.getSelectedFile();
+		   path = selectedFile.getAbsolutePath();
+		   System.out.println(path);
+		}else {
+			System.exit(1);
+		}
 		
 		
 		
-		//path = System.getProperty("user.dir")+"/ranbot_input.txt";
-		path = "C:/Users/Andreas Sitaras/Desktop/robot_input.txt";
+	
 		FileInputStream fstream = null;
 		try {
 			fstream = new FileInputStream(path);
@@ -123,12 +123,12 @@ public class Input {
         centerPanel.setOpaque(true);
         centerPanel.setBackground(Color.WHITE);
 
-        JLabel mLabel1 = new JLabel("Enter X size : ");
+        JLabel mLabel1 = new JLabel("Enter world size : ");
 
 
         inputField = new JSpinner();
 
-            inputField.setModel(new SpinnerNumberModel(10, 0, 100, 1));
+        inputField.setModel(new SpinnerNumberModel(10, 0, 100, 1));
         
 
         centerPanel.add(mLabel1);

@@ -1,3 +1,6 @@
+//Κουφάκης Αλέξανδρος-Μιχαήλ, 2175
+//Σεϊταρίδης Ανδρέας, 2200
+
 package EnvironmentFinish;
 
 import java.math.BigDecimal;
